@@ -5,3 +5,6 @@ actions: []
 tasks:
 - Tasks\registry.yml
 - Tasks\appx.yml
+- Tasks\components.yml
+- Tasks\revert.yml
+- Tasks\services.yml
