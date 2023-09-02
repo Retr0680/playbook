@@ -1,0 +1,7 @@
+title: Custom
+description: Custom Retr0OS Configuration
+privilage: Admin
+actions: []
+tasks:
+- Tasks\registry.yml
+- Tasks\appx.yml

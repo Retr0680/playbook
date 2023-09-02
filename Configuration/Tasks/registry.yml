@@ -1,0 +1,8 @@
+title: Registry Edits
+description: Registry Config
+privilege: TrustedInstaller
+actions: []
+features:
+- Tasks\Registry\bypass-requirements.yml
+- Tasks\Registry\configure-power-control.yml
+- Tasks\Registry\configure-privacy.yml
