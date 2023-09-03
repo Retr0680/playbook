@@ -2,9 +2,9 @@ title: Custom
 description: Custom Retr0OS Configuration
 privilage: Admin
 actions: []
-tasks:
-- Tasks\registry.yml
-- Tasks\appx.yml
-- Tasks\components.yml
-- Tasks\revert.yml
-- Tasks\services.yml
+features:
+- features\registry.yml
+- features\appx.yml
+- features\components.yml
+- features\revert.yml
+- features\services.yml
