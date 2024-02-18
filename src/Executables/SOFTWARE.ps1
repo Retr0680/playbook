@@ -2,7 +2,7 @@ param (
 	[switch]$Chrome,
 	[switch]$Brave,
 	[switch]$Waterfox,
-	[switch]$OperaGX
+	[switch]$OperaGX,
 )
 
 # ----------------------------------------------------------------------------------------------------------- #
@@ -52,6 +52,14 @@ if ($Chrome) {
 	Write-Host "Installing Google Chrome..."
 	& curl.exe -LSs "https://dl.google.com/dl/chrome/install/googlechromestandaloneenterprise64.msi" -o "$tempDir\chrome.msi"
 	Start-Process -FilePath "$tempDir\chrome.msi" -WindowStyle Hidden -ArgumentList '/qn' -Wait 2>&1 | Out-Null
+	exit
+}
+
+# Operagx
+if ($OperaGX) {
+	Write-Host "Installing OperaGX..."
+	& curl.exe -LSs "https://download.operacdn.com/pub/opera/desktop/96.0.4664.106/win/Opera_installer.exe" -o "$tempDir\OperaGXSetup.exe"
+	Start-Process -FilePath "$tempDIr\OperaGXSetup.exe" -WindowStyle Hidden -ArgumentList '/qn' -Wait 2>&1 | Out-Null
 	exit
 }
 
@@ -107,9 +115,9 @@ Write-Host "Installing legacy DirectX runtimes..."
 Start-Process -FilePath "$tempDir\directx\dxsetup.exe" -WindowStyle Hidden -ArgumentList '/silent' -Wait 2>&1 | Out-Null
 
 # Install Operagx
-Write-Host "Installing Operagx..."
-& curl.exe -LSs "https://download.operacdn.com/pub/opera/desktop/96.0.4664.106/win/Opera_installer.exe" -o "$tempDir\Operagx.exe"
-Start-Process -FilePath "$tempDir\Operagx.exe" -WindowStyle Hidden -ArgumentList '/SILENT /SP- /MERGETASKS=!desktopicon' -Wait 2>&1 | Out-Null
+#Write-Host "Installing Operagx..."
+#& curl.exe -LSs "https://download.operacdn.com/pub/opera/desktop/96.0.4664.106/win/Opera_installer.exe" -o "$tempDir\Operagx.exe"
+#Start-Process -FilePath "$tempDir\Operagx.exe" -WindowStyle Hidden -ArgumentList '/SILENT /SP- /MERGETASKS=!desktopicon' -Wait 2>&1 | Out-Null
 
 # Remove temporary directory
 Pop-Location

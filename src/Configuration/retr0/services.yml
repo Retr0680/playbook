@@ -13,11 +13,13 @@ actions:
 
   # ------------------------ Services ------------------------
 
+  #- !run:
+  #  exe: 'Disable Bluetooth.cmd'
+  #  path: '%windir%\Retr0Desktop\3. Configuration\Bluetooth'
+  #  args: '/silent'
+  #  option: 'disable-bluetooth'
   - !run:
-    exe: 'Disable Bluetooth.cmd'
-    path: '%windir%\Retr0Desktop\3. Configuration\Bluetooth'
-    args: '/silent'
-    option: 'disable-bluetooth'
+    exe: ''
   - !run:
     exe: 'Disable Printing (default).cmd'
     path: '%windir%\Retr0Desktop\3. Configuration\Printing'
