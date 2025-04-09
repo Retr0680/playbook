@@ -1,4 +1,4 @@
-$title = 'Preparing Retr0 user settings...'
+$title = 'Preparing Retr0''s user settings...'
 
 $Host.UI.RawUI.WindowTitle = $title
 Write-Host $title -ForegroundColor Yellow
