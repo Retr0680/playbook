@@ -70,3 +70,6 @@ actions:
   # set hidden settings pages
   # done before everything else as scripts will overwrite it
   - !task: { path: 'tweaks\qol\set-hidden-settings-pages.yml' }
+
+  # main tasks
+  - !task { path: 'retr0os\'}
