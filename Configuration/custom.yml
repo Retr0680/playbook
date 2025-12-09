@@ -72,4 +72,41 @@ actions:
   - !task: { path: 'tweaks\qol\set-hidden-settings-pages.yml' }
 
   # main tasks
-  - !task { path: 'retr0os\'}
+  - !task { path: 'retr0os\start.yml' }
+  - !task { path: 'retr0os\services.yml' }
+  - !task { path: 'retr0os\components.yml' }
+  - !task { path: 'retr0os\appx.yml' }
+  - !task { path: 'retr0os\default.yml' }
+  - !task { path: 'retr0os\revert.yml' }
+  - !task { path: "tweaks.yml" }
+
+  # set hives to HKU default user
+  - !writeStatus: { status: "Applying hives..." }
+  - !powerShell:
+    command: '.\APPLYDUHIVE.ps1'
+    exeDir: true
+    wait: true
+    runas: currentUserElevated
+
+  # set all the correct paths if there are incorrect ones in the registry
+  - !writeStatus: { status: "Cleaning up registry paths" }
+  - !powerShell:
+    command: '.\SETPATHS.ps1'
+    exeDir: true
+    wait: true
+    runas: currentUserElevated
+
+  # unloading the hive
+  - !powerShell
+    command: 'reg unload HKU\AME_UserHive_Default'
+    oobe: false
+    wait: true
+
+  # Set PowerShell execution policy to RemoteSigned from the previous "Unrestricted"
+  # This allows Atlas folder scripts (local) to run while requiring signatures for downloaded scripts
+  - !writeStatus: { status: "Securing PowerShell execution policy" }
+  - !registryValue:
+    path: 'HKLM\SOFTWARE\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell'
+    value: 'ExecutionPolicy'
+    data: 'RemoteSigned'
+    type: REG_SZ
