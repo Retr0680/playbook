@@ -1,0 +1,9 @@
+---
+title: Enable Notifications
+description: Notifications were turned off at the start of the Playbok to prevent random notifications from interfering with the setup process. This task re-enables notifications.
+actions:
+  - !cmd:
+    command: 'ENABLENOTIFS.cmd'
+    exeDir: True
+    wait: true
+    runas: currentUserElevated
