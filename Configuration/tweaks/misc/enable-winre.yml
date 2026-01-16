@@ -1,0 +1,9 @@
+---
+title: Enable Windows Recovery Environment (WinRE)
+description: After installing Retr0OS, this is to prevent windows from disabling WinRE.
+actions:
+  - !cmd:
+    command: 'reagentc /enable'
+    exeDir: true
+    wait: true
+    runas: currentUserElevated

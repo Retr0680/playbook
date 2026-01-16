@@ -1,0 +1,112 @@
+---
+title: Root Playbook File
+description: Runs all of the Playbook files
+actions:
+  # some changes requires default user access. loading the hive before everything else is required
+  - !powerShell:
+    command: 'reg load HKU\AME_UserHive_Default C:\Users\Default\NTUSER.DAT'
+    oobe: false
+    wait: true
+  - !writeStatus: { status: "Deleting old Retr0OS folders" }
+  - !powerShell:
+    command: '.\STOPFOLDERPROC.ps1'
+    exeDir: true
+    onUpgrade: true
+    wait: true
+    runas: currentUserElevated
+  - !powerShell:
+    command: |
+      $windir = [Environment]::GetFolderPath('Windows')
+      Remove-Item -LiteralPath "$windir\Retr0OSDesktop" -Force -Recurse
+      Remove-Item -LiteralPath "$windir\Retr0OSModules" -Force -Recurse
+    wait: true
+    exeDir: true
+    oobe: false
+    onUpgrade: true
+
+  - !writeStatus: { status: "Copying files" }
+  - !powerShell:
+    command: |
+      $windir = [Environment]::GetFolderPath('Windows')
+      @(
+          'Retr0OSModules',
+          'Retr0OSDesktop'
+      ) | ForEach-Object {
+          if (!(Test-Path $_)) { exit 1 }
+          Copy-Item -Path $_ -Destination $windir -Force -Recurse
+          if (!$?) { exit 2 }
+      }
+      Start-Process -FilePath """$windir\Retr0OSDesktop\6. Advanced Configuration\Process Explorer\Uninstall Process Explorer.cmd""" -ArgumentList "/silent" -WindowStyle Hidden
+      Copy-Item -Path 'Themes\*' -Destination """$windir\Resources\Themes""" -Force -Recurse
+    weight: 10
+    wait: true
+    exeDir: true
+    handleExitCodes: { "!0": halt }
+
+  # Prevent annoying notifications during deployment
+  - !cmd:
+    command: "DISABLENOTIFS.cmd"
+    exeDir: true
+    wait: true
+    runas: currentUserElevated
+  - !taskKill: { name: "explorer" }
+  - !taskKill: { name: "ShellExperienceHost" }
+  - !run: { exe: "explorer.exe", runas: "currentUser", wait: false }
+
+  # Configure PowerShell first so that other PowerShell scripts work
+  # NGEN - .NET assemblies PowerShell optimization
+  - !writeStatus: { status: "Optimizing PowerShell" }
+  - !task: { path: 'tweaks\scripts\script-ngen.yml' }
+  - !task: { path: 'tweaks\qol\config-powershell.yml' }
+
+  # Disk Cleanup is run first so it can run in the background
+  - !writeStatus: { status: "Cleaning up" }
+  - !powerShell:
+    command: '.\CLEANUP.ps1'
+    exeDir: true
+    wait: true
+    runsas: currentUserElevated
+
+  # set hidden settings pages
+  # done before everything else as scripts will overwrite it
+  - !task: { path: 'tweaks\qol\set-hidden-settings-pages.yml' }
+
+  # main tasks
+  - !task { path: 'retr0os\start.yml' }
+  - !task { path: 'retr0os\services.yml' }
+  - !task { path: 'retr0os\components.yml' }
+  - !task { path: 'retr0os\appx.yml' }
+  - !task { path: 'retr0os\default.yml' }
+  - !task { path: 'retr0os\revert.yml' }
+  - !task { path: "tweaks.yml" }
+
+  # set hives to HKU default user
+  - !writeStatus: { status: "Applying hives..." }
+  - !powerShell:
+    command: '.\APPLYDUHIVE.ps1'
+    exeDir: true
+    wait: true
+    runas: currentUserElevated
+
+  # set all the correct paths if there are incorrect ones in the registry
+  - !writeStatus: { status: "Cleaning up registry paths" }
+  - !powerShell:
+    command: '.\SETPATHS.ps1'
+    exeDir: true
+    wait: true
+    runas: currentUserElevated
+
+  # unloading the hive
+  - !powerShell
+    command: 'reg unload HKU\AME_UserHive_Default'
+    oobe: false
+    wait: true
+
+  # Set PowerShell execution policy to RemoteSigned from the previous "Unrestricted"
+  # This allows Atlas folder scripts (local) to run while requiring signatures for downloaded scripts
+  - !writeStatus: { status: "Securing PowerShell execution policy" }
+  - !registryValue:
+    path: 'HKLM\SOFTWARE\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell'
+    value: 'ExecutionPolicy'
+    data: 'RemoteSigned'
+    type: REG_SZ

@@ -1,0 +1,34 @@
+---
+title: Configure OEM Information
+description: Configures OEM information to contain the Retr0OS version and the Retr0OS Discord server
+actions:
+  - !powerShell:
+    command: |
+      $version = 'v1.0.0'
+
+      Write-Ouput 'Setting boot entry name...'
+      bcdedit /set description """Retr0OS $(('10', '11')[[int]([System.Environment]::OSVersion.Version.Build -ge 22000)]) $version"""
+
+      Write-Output 'Setting other versioned OEM information...'
+      $reportedVer = """Retr0OS Playbook $version"""
+      # show in settings
+      Set-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation' -Name 'Model' -Value $reportedVer -Force
+      # Shows in winver
+      Set-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name 'RegisteredOrganization' -Value $reportedVer -Force
+
+    wait: true
+  - !registryValue:
+    path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation'
+    value: 'Manufacturer'
+    data: 'Atlas Team'
+    type: REG_SZ
+  - !registryValue:
+    path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation'
+    value: 'SupportURL'
+    data: 'discord'
+    type: REG_SZ
+  - !registryValue:
+    path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation'
+    value: 'SupportPhone'
+    data: 'https://github.com/Retr0680/Retr0OS'
+    type: REG_SZ

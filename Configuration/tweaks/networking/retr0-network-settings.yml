@@ -1,0 +1,9 @@
+---
+title: Applies Retr0OS' Network Settings
+description: Applies Retr0OS' optimised network Settings
+actions:
+  - !cmd:
+    command: '"Retr0Desktop\9. Troubleshooting\Network\Reset Network to Retr0OS Default.cmd" /silent'
+    exeDir: true
+    wait: true
+    runas: currentUserElevated
